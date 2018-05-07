@@ -1,0 +1,11 @@
+# MacOS
+*.DS_Store
+thumbs.db
+
+# Dolphin (KDE)
+.directory
+
+# GitHub info
+.*
+LICENSE
+README.md
