@@ -86,11 +86,12 @@ else
 	for minion in ${MINIONS}
 	do
 		var_minionkey="${minion}_KEY"
+		val_minionkey=$(eval echo "${var_minionkey}")
 
-		if [ -n "${!var_minionkey}" ]
+		if [ -n "${val_minionkey}" ]
 		then
 			echo "=> Found minion key for ${minion} in environment variable"
-			printf "%s" "${!var_minionkey}" > "/etc/salt/pki/master/minion/${minion}"
+			printf "%s" "${val_minionkey}" > "/etc/salt/pki/master/minion/${minion}"
 		elif [ -f "/run/secrets/${var_minionkey}" ]
 		then
 			echo "=> Found minion key for ${minion} in docker swarm secrets"
@@ -109,24 +110,27 @@ else
 	for account in ${ACCOUNTS}
 	do
 		var_pass="${account}_PASSWORD"
+		val_pass=$(eval echo "${var_pass}")
 		var_list="${account}_LIST"
+		val_list=$(eval echo "${var_list}")
 		var_access="${account}_ACCESS"
+		val_access=$(eval echo "${var_access}")
 
-		if [ -n "${!var_pass}" ]
+		if [ -n "${val_pass}" ]
 		then
 			echo "=> Found password for \"${account}\" in environment variable."
-			create_user "${account}" "${!var_pass}"
-			set_access "${account}" "${!var_access}"
+			create_user "${account}" "${val_pass}"
+			set_access "${account}" "${val_access}"
 		elif [ -f "/run/secrets/${var_pass}" ]
 		then
 			echo "=> Found password for \"${account}\" in docker swarm secrets."
 			create_user "${account}" "$(cat /run/secrets/${var_pass})"
 			set_access "${account}" "$(cat /run/secrets/${var_access})"
-		elif [ -n "${!var_list}" ]
+		elif [ -n "${val_list}" ]
 		then
-			echo "=> Found list for '${account}' in environment variable."
-			create_group "${account}" "${!var_list}"
-			set_access "${account}\%" "${!var_access}"
+			echo "=> Found list for \"${account}\" in environment variable."
+			create_group "${account}" "${val_list}"
+			set_access "${account}\%" "${val_access}"
 		elif [ -f "/run/secrets/${var_list}" ]
 		then
 			echo "=> Found list for \"${account}\" in docker secrets."
@@ -146,11 +150,12 @@ else
 	for config in ${CONFIGS}
 	do
 		var_config="${config}_CONFIG"
+		val_config=$(eval echo "${var_config}")
 
-		if [ -n "${!var_config}" ]
+		if [ -n "${val_config}" ]
 		then
 			echo "=> Found extra config \"${config}\" in environment variable."
-			printf "%s" "${!var_config}" > "/etc/salt/master.d/${config}.conf"
+			printf "%s" "${val_config}" > "/etc/salt/master.d/${config}.conf"
 		elif [ -f "/run/config/${var_config}" ]
 		then
 			echo "=> Found extra config \"${config}\" in docker swarm config."
